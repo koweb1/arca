@@ -29,8 +29,8 @@
   :root {
     /* Max width of the content column */
     --content: 1360px;
-    /* Side padding: 24px phone, ~38px tablet, 64px laptop, 72px at 1440, 96px from 1920 */
-    --gutter: clamp(1.5rem, 5vw, 6rem);
+    /* Side padding: 18px small phone, ~20px at 390px, ~38px tablet, 64px laptop, 72px at 1440, 96px from 1920 */
+    --gutter: clamp(1.125rem, 5vw, 6rem);
     /* Where content starts. Equals the gutter, or more on very wide screens so the column stays centered.
        "%" resolves against the width of whatever element uses it, so it works for padding, left and right.
        The env() terms keep content clear of phone notches in landscape. */

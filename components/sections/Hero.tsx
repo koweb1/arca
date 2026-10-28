@@ -79,7 +79,7 @@ export default function Hero() {
             <p data-hero-fade className="eyebrow">
               Architecture &amp; Interior Studio
             </p>
-            <h1 className="disp mb-[1.4rem] mt-4 text-[clamp(2.15rem,6.3vw,6.4rem)]">
+            <h1 className="disp mb-[1.4rem] mt-4 text-[clamp(2.15rem,4.4vw,5.25rem)]">
               <span className="block overflow-hidden pb-[.06em]">
                 <span data-hero-line className="block">
                   Spaces that
@@ -97,20 +97,31 @@ export default function Hero() {
             >
               Architecture shaped by vision, precision, and purpose.
             </p>
-            <div data-hero-fade className="mt-8 flex flex-wrap gap-[.8rem]">
-              <AnchorLink href="#work" className={buttonClass("primary")}>
+            {/* Phones: stacked, full width, equal size. From 640px: side by side at natural width. */}
+            <div
+              data-hero-fade
+              className="mt-10 flex flex-col gap-3 min-[640px]:mt-8 min-[640px]:flex-row min-[640px]:flex-wrap min-[640px]:gap-[.8rem]"
+            >
+              <AnchorLink
+                href="#work"
+                className={buttonClass("primary", "md", "w-full min-[640px]:w-auto")}
+              >
                 Explore Our Work &rarr;
               </AnchorLink>
-              <AnchorLink href="#contact" className={buttonClass("ghost")}>
+              <AnchorLink
+                href="#contact"
+                className={buttonClass("ghost", "md", "w-full min-[640px]:w-auto")}
+              >
                 Start a Project
               </AnchorLink>
             </div>
           </Container>
         </div>
 
+        {/* Desktop hint only. On phones it collided with the scroll readout. */}
         <div
           aria-hidden="true"
-          className={`absolute bottom-[calc(1.6rem+env(safe-area-inset-bottom,0px))] left-[var(--edge)] flex items-center gap-[.8rem] font-mono text-[.66rem] font-medium uppercase tracking-[.16em] ${overlayText}`}
+          className={`absolute bottom-[calc(1.6rem+env(safe-area-inset-bottom,0px))] left-[var(--edge)] hidden items-center gap-[.8rem] font-mono text-[.66rem] font-medium uppercase tracking-[.16em] min-[640px]:flex ${overlayText}`}
         >
           <i className="relative block h-px w-[3.2rem] overflow-hidden bg-line-2 after:absolute after:inset-0 after:animate-cue after:bg-blue after:content-[''] after:[transform:translateX(-100%)]" />
           Scroll to enter
