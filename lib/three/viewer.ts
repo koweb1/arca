@@ -14,7 +14,13 @@ export interface Viewer {
   setModel: (index: number) => void;
   setView: (view: ViewName) => void;
   setNight: (on: boolean) => void;
+  rotate: (deltaDegrees: number) => void;
   dispose: () => void;
+}
+
+export interface ViewerOptions {
+  /** Called the first time the user presses on the canvas to drag. */
+  onInteract?: () => void;
 }
 
 interface ViewerModel {
@@ -24,13 +30,14 @@ interface ViewerModel {
   set: (glow: number) => void;
 }
 
+/* Camera distance multipliers. Wider than before so each model sits fully inside the wide viewer. */
 const VIEWS: Record<ViewName, { el: number; k: number }> = {
-  ext: { el: 14, k: 1 },
-  aer: { el: 52, k: 1.18 },
-  ent: { el: 6, k: 0.55 },
+  ext: { el: 14, k: 1.05 },
+  aer: { el: 50, k: 1.4 },
+  ent: { el: 6, k: 0.58 },
 };
 
-export function createViewer(canvas: HTMLCanvasElement): Viewer | null {
+export function createViewer(canvas: HTMLCanvasElement, opts: ViewerOptions = {}): Viewer | null {
   let renderer: THREE.WebGLRenderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -57,6 +64,13 @@ export function createViewer(canvas: HTMLCanvasElement): Viewer | null {
   const envs = createEnvs();
   const env = newEnv();
 
+  /* Viewer-only tweak of the day scene: a darker ground and a lower, stronger sun
+     give the model contrast and longer shadows instead of a flat grey look. */
+  envs.day.ground.set(0x66756a);
+  envs.day.hemi = 0.8;
+  envs.day.sunInt = 2.2;
+  envs.day.sun.set(-30, 26, 22);
+
   const villa = buildVilla();
   const tower = buildTower();
   const pavilion = buildPavilion();
@@ -67,7 +81,7 @@ export function createViewer(canvas: HTMLCanvasElement): Viewer | null {
       ty: 3.2,
       set: (g) => applyBuilding(villa, { form: 1, fill: 1, edge: 0, explode: 0, glow: g }),
     },
-    { group: tower.group, R: 66, ty: 17, set: tower.setGlow },
+    { group: tower.group, R: 70, ty: 17, set: tower.setGlow },
     { group: pavilion.group, R: 40, ty: 3, set: pavilion.setGlow },
   ];
   models.forEach((m, i) => {
@@ -78,8 +92,8 @@ export function createViewer(canvas: HTMLCanvasElement): Viewer | null {
   const st = {
     idx: 0,
     az: 38,
-    el: 14,
-    rad: models[0].R,
+    el: VIEWS.ext.el,
+    rad: models[0].R * VIEWS.ext.k,
     night: 0,
     view: "ext" as ViewName,
     auto: true,
@@ -118,6 +132,7 @@ export function createViewer(canvas: HTMLCanvasElement): Viewer | null {
     px = e.clientX;
     py = e.clientY;
     st.auto = false;
+    opts.onInteract?.();
     try {
       canvas.setPointerCapture(e.pointerId);
     } catch {
@@ -200,6 +215,12 @@ export function createViewer(canvas: HTMLCanvasElement): Viewer | null {
     setNight(on) {
       if (reduce) st.night = on ? 1 : 0;
       else gsap.to(st, { night: on ? 1 : 0, duration: 1.2, ease: "power2.inOut" });
+    },
+    rotate(deltaDegrees) {
+      st.auto = false;
+      st.lastTouch = performance.now();
+      if (reduce) st.az += deltaDegrees;
+      else gsap.to(st, { az: st.az + deltaDegrees, duration: 0.5, ease: "power2.out", overwrite: "auto" });
     },
     dispose() {
       cancelAnimationFrame(raf);
