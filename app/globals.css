@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0b1114;
+  --color-ink-2: #101a1f;
+  --color-ink-3: #172830;
+  --color-line: rgb(165 215 230 / 0.16);
+  --color-line-2: rgb(165 215 230 / 0.34);
+  --color-fg: #e8eeef;
+  --color-mute: #93a4ab;
+  --color-blue: #8bd7ea;
+  --color-blue-2: #5bb4cc;
+  --color-warm: #ffc98b;
+  --color-soft: #c6d2d6;
+
+  --font-sans: "Archivo Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --animate-cue: cue 2.2s ease-in-out infinite;
+  @keyframes cue {
+    60%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    /* Max width of the content column */
+    --content: 1360px;
+    /* Side padding: 24px phone, ~38px tablet, 64px laptop, 72px at 1440, 96px from 1920 */
+    --gutter: clamp(1.5rem, 5vw, 6rem);
+    /* Where content starts. Equals the gutter, or more on very wide screens so the column stays centered.
+       "%" resolves against the width of whatever element uses it, so it works for padding, left and right.
+       The env() terms keep content clear of phone notches in landscape. */
+    --edge: max(
+      var(--gutter),
+      calc((100% - var(--content)) / 2),
+      env(safe-area-inset-left, 0px),
+      env(safe-area-inset-right, 0px)
+    );
+    --nav-h: 4.5rem;
+  }
+  html {
+    background: var(--color-ink);
+    color-scheme: dark;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 3px;
+  }
+  /* Sections and <main> receive focus from code (skip link, in-page links). No ring around a huge block. */
+  [tabindex="-1"]:focus {
+    outline: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Display type used by every big heading */
+@utility disp {
+  font-family: var(--font-sans);
+  font-stretch: 125%;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+  line-height: 0.94;
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-blue);
+}
